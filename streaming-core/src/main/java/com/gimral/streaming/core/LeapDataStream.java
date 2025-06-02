@@ -5,6 +5,9 @@ import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
 import org.apache.flink.streaming.api.windowing.windows.Window;
+
+import com.gimral.streaming.core.functions.ErrorRouterProcess;
+
 import org.apache.flink.streaming.api.functions.ProcessFunction;
 import org.apache.flink.api.connector.sink2.Sink;
 
@@ -18,25 +21,26 @@ public class LeapDataStream<T> {
         this.delegate = delegate;
     }
 
-    public <R> LeapDataStream<R> map(MapFunction<T, R> mapper) {
+    public <R> LeapSingleOutputStreamOperator<R> map(MapFunction<T, R> mapper) {
         System.out.println("Intercepted map operation");
         LeapMapFunction<T, R> leapMapFunction = new LeapMapFunction<>(mapper);
-        return new LeapDataStream<>(delegate.map(leapMapFunction));
+        return new LeapSingleOutputStreamOperator<>(delegate.map(leapMapFunction)
+                .process(new ErrorRouterProcess<>()));
     }
 
-    public LeapDataStream<T> filter(FilterFunction<T> filter) {
+    public LeapSingleOutputStreamOperator<T> filter(FilterFunction<T> filter) {
         System.out.println("Intercepted filter operation");
-        return new LeapDataStream<>(delegate.filter(filter));
+        return new LeapSingleOutputStreamOperator<>(delegate.filter(filter));
     }
 
-    public <R> LeapDataStream<R> flatMap(FlatMapFunction<T, R> flatMapper) {
+    public <R> LeapSingleOutputStreamOperator<R> flatMap(FlatMapFunction<T, R> flatMapper) {
         System.out.println("Intercepted flatMap operation");
-        return new LeapDataStream<>(delegate.flatMap(flatMapper));
+        return new LeapSingleOutputStreamOperator<>(delegate.flatMap(flatMapper));
     }
 
-    public <K> KeyedStream<T, K> keyBy(KeySelector<T, K> keySelector) {
+    public <K> LeapKeyedStream<T, K> keyBy(KeySelector<T, K> keySelector) {
         System.out.println("Intercepted keyBy operation");
-        return delegate.keyBy(keySelector);
+        return new LeapKeyedStream<>(delegate.keyBy(keySelector));
     }
 
     @SafeVarargs
@@ -47,7 +51,7 @@ public class LeapDataStream<T> {
 
     public <R> LeapDataStream<R> process(ProcessFunction<T, R> function) {
         System.out.println("Intercepted process operation");
-        return new LeapDataStream<>(delegate.process(function));s
+        return new LeapDataStream<>(delegate.process(function));
     }
 
     public void sinkTo(Sink<T> sink) {

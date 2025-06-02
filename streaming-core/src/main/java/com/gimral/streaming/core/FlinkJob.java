@@ -29,6 +29,8 @@ public abstract class FlinkJob {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         DataStream<Long> dataStream = env.fromData(new ArrayList<Long>()).setParallelism(1);
         LeapDataStream<Long> ds = new LeapDataStream<>(dataStream);
+        dataStream.map(null)
+        dataStream.keyBy(null).map(null).filter(null)
         ds = ds.map(new MapFunction<Long, Long>() {
             @Override
             public Long map(Long value) throws Exception {
