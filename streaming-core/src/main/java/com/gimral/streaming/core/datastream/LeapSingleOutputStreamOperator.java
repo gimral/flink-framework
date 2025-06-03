@@ -1,4 +1,4 @@
-package com.gimral.streaming.core;
+package com.gimral.streaming.core.datastream;
 
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;

@@ -6,6 +6,8 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
+import com.gimral.streaming.core.datastream.LeapDataStream;
+
 /**
  * Abstract base class for Flink streaming jobs in the framework.
  */
@@ -29,8 +31,8 @@ public abstract class FlinkJob {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         DataStream<Long> dataStream = env.fromData(new ArrayList<Long>()).setParallelism(1);
         LeapDataStream<Long> ds = new LeapDataStream<>(dataStream);
-        dataStream.map(null)
-        dataStream.keyBy(null).map(null).filter(null)
+        dataStream.keyBy(null).map(null).filter(null);
+        ds.keyBy(null).map(null).filter(null);
         ds = ds.map(new MapFunction<Long, Long>() {
             @Override
             public Long map(Long value) throws Exception {

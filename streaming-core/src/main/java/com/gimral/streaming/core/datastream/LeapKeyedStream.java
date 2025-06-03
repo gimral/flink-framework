@@ -1,10 +1,9 @@
-package com.gimral.streaming.core;
+package com.gimral.streaming.core.datastream;
 
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.streaming.api.datastream.KeyedStream;
 import org.apache.flink.streaming.api.datastream.KeyedStream.IntervalJoin;
-import org.apache.flink.streaming.api.functions.KeyedProcessFunction;
 import org.apache.flink.streaming.api.functions.sink.legacy.SinkFunction;
 
 import com.gimral.streaming.core.functions.LeapKeyedProcessFunction;

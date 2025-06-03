@@ -1,4 +1,4 @@
-package com.gimral.streaming.core;
+package com.gimral.streaming.core.functions;
 
 import org.apache.flink.api.common.functions.MapFunction;
 
