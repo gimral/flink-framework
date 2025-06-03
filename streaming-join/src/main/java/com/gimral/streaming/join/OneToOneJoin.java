@@ -7,10 +7,11 @@ import org.apache.flink.api.common.state.v2.ValueStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction;
 import org.apache.flink.util.Collector;
 
-public class OneToOneJoin<K, L, R> extends KeyedCoProcessFunction<K, L, R, Tuple2<K, Tuple2<L, R>>> {
+import com.gimral.streaming.core.functions.LeapKeyedCoProcessFunction;
+
+public class OneToOneJoin<K, L, R> extends LeapKeyedCoProcessFunction<K, L, R, Tuple2<K, Tuple2<L, R>>> {
     private static final String LEFT_RECORD = "LeftRecord";
     private static final String RIGHT_RECORD = "RightRecord";
     private static final String TIMER = "Timer";
@@ -28,7 +29,7 @@ public class OneToOneJoin<K, L, R> extends KeyedCoProcessFunction<K, L, R, Tuple
     }
 
     @Override
-    public void open(OpenContext ctx) {
+    public void innerOpen(OpenContext ctx) {
         RuntimeContext runtimeCtx = getRuntimeContext();
         leftRecordState = runtimeCtx
                 .getState(new ValueStateDescriptor<>(LEFT_RECORD, TypeInformation.of(new TypeHint<>() {
@@ -41,7 +42,7 @@ public class OneToOneJoin<K, L, R> extends KeyedCoProcessFunction<K, L, R, Tuple
     }
 
     @Override
-    public void processElement1(L input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out) {
+    public void innerProcessElement1(L input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out) {
         // Validate the input
         if (input == null)
             return;
@@ -61,7 +62,7 @@ public class OneToOneJoin<K, L, R> extends KeyedCoProcessFunction<K, L, R, Tuple
     }
 
     @Override
-    public void processElement2(R input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out) {
+    public void innerProcessElement2(R input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out) {
         // Validate the input
         if (input == null)
             return;

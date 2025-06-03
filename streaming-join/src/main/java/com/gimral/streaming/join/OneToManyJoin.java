@@ -9,10 +9,11 @@ import org.apache.flink.api.common.state.v2.ValueStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
-import org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction;
 import org.apache.flink.util.Collector;
 
-public class OneToManyJoin<K, L, R> extends KeyedCoProcessFunction<K, L, R, Tuple2<K, Tuple2<L, R>>> {
+import com.gimral.streaming.core.functions.LeapKeyedCoProcessFunction;
+
+public class OneToManyJoin<K, L, R> extends LeapKeyedCoProcessFunction<K, L, R, Tuple2<K, Tuple2<L, R>>> {
     private static final String LEFT_RECORD = "LeftRecord";
     private static final String RIGHT_RECORDS = "RightRecords";
     private static final String LEFT_TIMER = "LeftTimer";
@@ -34,7 +35,7 @@ public class OneToManyJoin<K, L, R> extends KeyedCoProcessFunction<K, L, R, Tupl
     }
 
     @Override
-    public void open(OpenContext ctx) {
+    public void innerOpen(OpenContext ctx) {
         RuntimeContext runtimeCtx = getRuntimeContext();
         leftRecordState = runtimeCtx
                 .getState(new ValueStateDescriptor<>(LEFT_RECORD, TypeInformation.of(new TypeHint<>() {
@@ -48,7 +49,7 @@ public class OneToManyJoin<K, L, R> extends KeyedCoProcessFunction<K, L, R, Tupl
     }
 
     @Override
-    public void processElement1(L input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out) throws Exception {
+    public void innerProcessElement1(L input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out) throws Exception {
         if (input == null)
             return;
         Iterable<R> rightValues = rightRecordsState.get();
@@ -74,7 +75,7 @@ public class OneToManyJoin<K, L, R> extends KeyedCoProcessFunction<K, L, R, Tupl
     }
 
     @Override
-    public void processElement2(R input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out) throws Exception {
+    public void innerProcessElement2(R input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out) throws Exception {
         if (input == null)
             return;
         L leftValue = leftRecordState.value();
