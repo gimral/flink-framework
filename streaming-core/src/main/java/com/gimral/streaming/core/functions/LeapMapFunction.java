@@ -7,7 +7,7 @@ import com.gimral.streaming.core.model.ErrorInputOutput;
 /**
  * Delegate wrapper for Flink MapFunction to intercept or extend behavior.
  */
-class LeapMapFunction<IN, OUT> implements MapFunction<IN, ErrorInputOutput<IN, OUT>> {
+public class LeapMapFunction<IN, OUT> implements MapFunction<IN, ErrorInputOutput<IN, OUT>> {
     protected final MapFunction<IN, OUT> delegate;
 
     public LeapMapFunction(MapFunction<IN, OUT> delegate) {

@@ -33,6 +33,7 @@ public abstract class FlinkJob {
         LeapDataStream<Long> ds = new LeapDataStream<>(dataStream);
         dataStream.keyBy(null).map(null).filter(null);
         ds.keyBy(null).map(null).filter(null);
+        ds.filter(s -> s > 0);
         ds = ds.map(new MapFunction<Long, Long>() {
             @Override
             public Long map(Long value) throws Exception {
