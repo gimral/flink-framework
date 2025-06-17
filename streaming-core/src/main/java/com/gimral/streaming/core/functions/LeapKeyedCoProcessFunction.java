@@ -1,7 +1,6 @@
 package com.gimral.streaming.core.functions;
 
 import org.apache.flink.api.common.functions.OpenContext;
-import org.apache.flink.api.common.functions.RuntimeContext;
 import org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction;
 import org.apache.flink.util.Collector;
 

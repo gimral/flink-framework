@@ -1,6 +1,7 @@
 package com.gimral.streaming.core.datastream;
 
 import org.apache.flink.api.common.functions.*;
+import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.java.functions.KeySelector;
 import org.apache.flink.streaming.api.datastream.*;
 import org.apache.flink.streaming.api.windowing.assigners.WindowAssigner;
@@ -10,6 +11,7 @@ import com.gimral.streaming.core.functions.ErrorRouterProcess;
 import com.gimral.streaming.core.functions.LeapMapFunction;
 
 import org.apache.flink.streaming.api.functions.ProcessFunction;
+import org.apache.flink.streaming.api.functions.sink.legacy.SinkFunction;
 import org.apache.flink.api.connector.sink2.Sink;
 
 /**
@@ -22,11 +24,14 @@ public class LeapDataStream<T> {
         this.delegate = delegate;
     }
 
-    public <R> LeapSingleOutputStreamOperator<R> map(MapFunction<T, R> mapper) {
+    public DataStream<T> getDelegate() {
+        return delegate;
+    }
+
+    public <R> LeapSingleOutputStreamOperator<R> map(LeapMapFunction<T, R> mapper) {
         System.out.println("Intercepted map operation");
-        LeapMapFunction<T, R> leapMapFunction = new LeapMapFunction<>(mapper);
-        return new LeapSingleOutputStreamOperator<>(delegate.map(leapMapFunction)
-                .process(new ErrorRouterProcess<>()));
+        // LeapMapFunction<T, R> leapMapFunction = new LeapMapFunction<>(mapper);
+        return new LeapSingleOutputStreamOperator<>(delegate.map(mapper));
     }
 
     public LeapSingleOutputStreamOperator<T> filter(FilterFunction<T> filter) {
@@ -63,5 +68,10 @@ public class LeapDataStream<T> {
     public <W extends Window> AllWindowedStream<T, W> windowAll(WindowAssigner<? super T, W> assigner) {
         System.out.println("Intercepted windowAll operation");
         return delegate.windowAll(assigner);
+    }
+
+    public DataStreamSink<T> addSink(SinkFunction<T> sinkFunction) {
+        System.out.println("Intercepted addSink operation");
+        return delegate.addSink(sinkFunction);
     }
 }

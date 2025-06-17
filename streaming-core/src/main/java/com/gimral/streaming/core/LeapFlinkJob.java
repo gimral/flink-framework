@@ -11,7 +11,7 @@ import com.gimral.streaming.core.datastream.LeapDataStream;
 /**
  * Abstract base class for Flink streaming jobs in the framework.
  */
-public abstract class FlinkJob {
+public abstract class LeapFlinkJob {
     /**
      * Entry point for job execution. Subclasses should implement this method to
      * define the job pipeline.
@@ -29,18 +29,19 @@ public abstract class FlinkJob {
      */
     public final void run(String jobName) throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
-        DataStream<Long> dataStream = env.fromData(new ArrayList<Long>()).setParallelism(1);
-        LeapDataStream<Long> ds = new LeapDataStream<>(dataStream);
-        dataStream.keyBy(null).map(null).filter(null);
-        ds.keyBy(null).map(null).filter(null);
-        ds.filter(s -> s > 0);
-        ds = ds.map(new MapFunction<Long, Long>() {
-            @Override
-            public Long map(Long value) throws Exception {
-                // Custom mapping logic
-                return value;
-            }
-        });
+        // DataStream<Long> dataStream = env.fromData(new
+        // ArrayList<Long>()).setParallelism(1);
+        // LeapDataStream<Long> ds = new LeapDataStream<>(dataStream);
+        // // dataStream.keyBy(null).map(null).filter(null);
+        // // ds.keyBy(null).map(null).filter(null);
+        // // ds.filter(s -> s > 0);
+        // ds = ds.map(new MapFunction<Long, Long>() {
+        // @Override
+        // public Long map(Long value) throws Exception {
+        // // Custom mapping logic
+        // return value;
+        // }
+        // });
         build(env);
         env.execute(jobName);
     }
