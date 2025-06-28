@@ -1,0 +1,7 @@
+# Spotless configuration for Java
+# See https://github.com/diffplug/spotless/tree/main/plugin-maven for more options
+
+# Use google-java-format
+java {
+  googleJavaFormat()
+}

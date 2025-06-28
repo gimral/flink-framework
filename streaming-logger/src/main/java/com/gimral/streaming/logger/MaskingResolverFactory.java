@@ -8,21 +8,24 @@ import org.apache.logging.log4j.layout.template.json.resolver.*;
 @Plugin(name = "MaskingResolverFactory", category = TemplateResolverFactory.CATEGORY)
 public final class MaskingResolverFactory implements EventResolverFactory {
 
-    private static final MaskingResolverFactory INSTANCE = new MaskingResolverFactory();
+  private static final MaskingResolverFactory INSTANCE = new MaskingResolverFactory();
 
-    private MaskingResolverFactory() {}
+  private MaskingResolverFactory() {}
 
-    @PluginFactory
-    public static MaskingResolverFactory getInstance() {
-        return INSTANCE;
-    }
-    @Override
-    public String getName() {
-        return MaskingResolver.getName();
-    }
+  @PluginFactory
+  public static MaskingResolverFactory getInstance() {
+    return INSTANCE;
+  }
 
-    @Override
-    public TemplateResolver<LogEvent> create(EventResolverContext context, TemplateResolverConfig config) {
-        return new MaskingResolver();
-    }
+  @Override
+  public String getName() {
+    return MaskingResolver.getName();
+  }
+
+  @Override
+  public TemplateResolver<LogEvent> create(
+      EventResolverContext context, TemplateResolverConfig config) {
+
+    return new MaskingResolver(config);
+  }
 }

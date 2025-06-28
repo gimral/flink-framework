@@ -12,7 +12,8 @@
       "field": "name"
     },
     "message": {
-      "$resolver": "mask"
+      "$resolver": "mask",
+      "patterns": "classpath:SensitivePatterns.json"
     },
     "process.thread.name": {
       "$resolver": "thread",

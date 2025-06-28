@@ -1,18 +1,6 @@
 [
   {
-    "pattern": "(?i)password\\s*[:=]\\s*\\S+",
-    "replacement": "***"
-  },
-  {
-    "pattern": "(?i)secret\\s*[:=]\\s*\\S+",
-    "replacement": "[MASKED]"
-  },
-  {
-    "pattern": "(?i)token\\s*[:=]\\s*\\S+",
-    "replacement": "<hidden>"
-  },
-  {
-    "pattern": "\\b(\\d{4})[-\\s]?(\\d{4})[-\\s]?(\\d{4})[-\\s]?(\\d{4})\\b",
-    "replacement": "$1******$2"
+    "pattern": "[unclosed",
+    "replacement": "INVALID"
   }
 ]
