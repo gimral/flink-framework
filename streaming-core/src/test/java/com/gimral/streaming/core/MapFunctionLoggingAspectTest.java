@@ -1,8 +1,10 @@
 package com.gimral.streaming.core;
 
+import com.gimral.streaming.core.function.FlinkFlatMapFunction;
 import com.gimral.streaming.core.function.FlinkMapFunction;
 import com.gimral.streaming.core.function.FlinkRichMapFunction;
 import com.gimral.streaming.core.model.LeapRecord;
+import org.apache.flink.runtime.operators.testutils.DiscardingOutputCollector;
 import org.apache.logging.log4j.core.test.appender.ListAppender;
 import org.apache.logging.log4j.core.test.junit.LoggerContextSource;
 import org.apache.logging.log4j.core.test.junit.Named;
@@ -19,7 +21,7 @@ public class MapFunctionLoggingAspectTest {
 
     @Test
     @LoggerContextSource("log4j2-listappender.properties")
-    public void testMappingJob(final @Named(value = "ListAppender") ListAppender appender) {
+    public void testMapFunction(final @Named(value = "ListAppender") ListAppender appender) {
         FlinkMapFunction mapper = new FlinkMapFunction();
         LeapRecord<Integer> record = new LeapRecord<>(1,1,"1","map");
 
@@ -33,11 +35,25 @@ public class MapFunctionLoggingAspectTest {
 
     @Test
     @LoggerContextSource("log4j2-listappender.properties")
-    public void testRichMappingJob(final @Named(value = "ListAppender") ListAppender appender) {
+    public void testRichMapFuntion(final @Named(value = "ListAppender") ListAppender appender) {
         FlinkRichMapFunction mapper = new FlinkRichMapFunction();
         LeapRecord<Integer> record = new LeapRecord<>(1,1,"1","map");
 
         mapper.map(record);
+
+        final LinkedHashMap<String, String> actualLoggedEvent = getFirstLoggedEvent(appender);
+
+        assertNotNull(actualLoggedEvent);
+        assertEquals("1",actualLoggedEvent.get("urc"));
+    }
+
+    @Test
+    @LoggerContextSource("log4j2-listappender.properties")
+    public void testFlatMapFunction(final @Named(value = "ListAppender") ListAppender appender) throws Exception {
+        FlinkFlatMapFunction mapper = new FlinkFlatMapFunction();
+        LeapRecord<Integer> record = new LeapRecord<>(1,1,"1","map");
+
+        mapper.flatMap(record,new DiscardingOutputCollector<>());
 
         final LinkedHashMap<String, String> actualLoggedEvent = getFirstLoggedEvent(appender);
 

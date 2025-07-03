@@ -21,11 +21,11 @@ public class MapFunctionLoggingAspect {
      * Intercept all map methods of classes implementing
      * org.apache.flink.api.common.functions.MapFunction
      */
-    @Around("execution(* org.apache.flink.api.common.functions.MapFunction+.map(..))")
+    @Around("execution(* org.apache.flink.api.common.functions.MapFunction+.map(..)) || " +
+            "execution(* org.apache.flink.api.common.functions.FlatMapFunction+.flatMap(..))")
     public Object logAroundMap(ProceedingJoinPoint joinPoint) throws Throwable {
         Object[] args = joinPoint.getArgs();
         Object param = args.length > 0 ? args[0] : null;
-        System.out.println("Within logAroundMap param is : " + param);
         if (param instanceof LeapRecord) {
             String urc = ((LeapRecord<?>) param).getUrc();
             try (MDC.MDCCloseable ignored = MDC.putCloseable("urc", urc)) {
