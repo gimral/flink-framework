@@ -13,6 +13,9 @@
         <maven.compiler.target>17</maven.compiler.target>
         <flink.version>2.0.0</flink.version>
         <framework.version>1.0-SNAPSHOT</framework.version>
+        <junit.version>5.13.1</junit.version>
+        <spotless.version>2.44.0</spotless.version>
+        <jacoco.version>0.8.12</jacoco.version>
     </properties>
 
     <dependencies>
@@ -35,20 +38,6 @@
             <version>${flink.version}</version>
         </dependency>
 
-        <!-- Flink Streaming Connectors (optional, add as needed) -->
-        <!-- <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-connector-kafka</artifactId>
-            <version>${flink.version}</version>
-        </dependency> -->
-
-        <!-- Flink Table API (optional, add as needed) -->
-        <!-- <dependency>
-            <groupId>org.apache.flink</groupId>
-            <artifactId>flink-table-api-java</artifactId>
-            <version>${flink.version}</version>
-        </dependency> -->
-
         <!-- Flink Test Utilities (for unit/integration tests) -->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -61,8 +50,57 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.10.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>com.diffplug.spotless</groupId>
+                <artifactId>spotless-maven-plugin</artifactId>
+                <version>${spotless.version}</version>
+                <configuration>
+                    <java>
+                        <googleJavaFormat />
+                    </java>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>spotless-apply-on-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>apply</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>spotless-check</id>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>

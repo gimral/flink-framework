@@ -21,6 +21,7 @@
     </properties>
 
     <dependencies>
+        <!-- Log4j Dependencies -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -41,6 +42,8 @@
             <artifactId>log4j-layout-template-json</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+
+        <!-- Jackson Dependencies-->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-core</artifactId>
@@ -51,6 +54,8 @@
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
+
+        <!-- Test Dependencies-->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
