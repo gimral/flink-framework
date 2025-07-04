@@ -39,6 +39,13 @@
             <version>${flink.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-runtime</artifactId>
+            <version>${flink.version}</version>
+            <scope>provided</scope>
+        </dependency>
+
         <!-- Flink Test Utilities (for unit/integration tests) -->
         <dependency>
             <groupId>org.apache.flink</groupId>
@@ -84,7 +91,6 @@
             <version>${aspectj.version}</version>
         </dependency>
 
-
         <!-- JUnit Jupiter for testing -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
@@ -127,6 +133,15 @@
     </dependencies>
     <build>
         <plugins>
+            <!-- Maven Compiler Plugin -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
+                <configuration>
+                    <skipMain>true</skipMain> <!-- Skip javac compilation -->
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -137,9 +152,9 @@
             </plugin>
             <!-- AspectJ Maven Plugin for Compile-Time Weaving -->
             <plugin>
-                <groupId>org.codehaus.mojo</groupId>
+                <groupId>dev.aspectj</groupId>
                 <artifactId>aspectj-maven-plugin</artifactId>
-                <version>1.15.0</version>
+                <version>1.14.1</version>
                 <configuration>
                     <complianceLevel>${java.version}</complianceLevel>
                     <source>${java.version}</source>
@@ -148,6 +163,19 @@
                     <verbose>true</verbose>
                     <Xlint>ignore</Xlint>
                     <encoding>UTF-8</encoding>
+                    <weaveDependencies>
+                        <!-- Weave Flink Core -->
+                        <weaveDependency>
+                            <groupId>org.apache.flink</groupId>
+                            <artifactId>flink-runtime</artifactId>
+                        </weaveDependency>
+                    </weaveDependencies>
+                    <aspectLibraries>
+                        <aspectLibrary>
+                            <groupId>org.aspectj</groupId>
+                            <artifactId>aspectjrt</artifactId>
+                        </aspectLibrary>
+                    </aspectLibraries>
                 </configuration>
                 <executions>
                     <execution>
@@ -166,16 +194,37 @@
                     </dependency>
                 </dependencies>
             </plugin>
-            <!-- Maven Compiler Plugin -->
+            <!-- Maven Shade Plugin to Package Woven Classes -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.13.0</version>
-                <configuration>
-                    <source>${java.version}</source>
-                    <target>${java.version}</target>
-                    <encoding>UTF-8</encoding>
-                </configuration>
+                <artifactId>maven-shade-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>shade</goal>
+                        </goals>
+                        <configuration>
+                            <createDependencyReducedPom>true</createDependencyReducedPom>
+                            <artifactSet>
+                                <includes>
+                                    <include>org.apache.flink:flink-runtime</include>
+                                </includes>
+                            </artifactSet>
+                            <filters>
+                                <filter>
+                                    <artifact>org.apache.flink:*</artifact>
+                                    <excludes>
+                                        <exclude>META-INF/*.SF</exclude>
+                                        <exclude>META-INF/*.DSA</exclude>
+                                        <exclude>META-INF/*.RSA</exclude>
+                                    </excludes>
+                                </filter>
+                            </filters>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

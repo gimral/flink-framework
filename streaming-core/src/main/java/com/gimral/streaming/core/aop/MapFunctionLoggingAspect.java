@@ -3,8 +3,6 @@ package com.gimral.streaming.core.aop;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
 
 import com.gimral.streaming.core.model.LeapRecord;
@@ -16,7 +14,6 @@ import com.gimral.streaming.core.model.LeapRecord;
  */
 @Aspect
 public class MapFunctionLoggingAspect {
-    private final Logger logger = LoggerFactory.getLogger(MapFunctionLoggingAspect.class);
     /**
      * Intercept all map methods of classes implementing
      * org.apache.flink.api.common.functions.MapFunction
