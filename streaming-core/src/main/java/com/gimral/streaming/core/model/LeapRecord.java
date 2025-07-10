@@ -1,42 +1,31 @@
 package com.gimral.streaming.core.model;
 
-public class LeapRecord<T> {
-    private final T data;
-    private final long timestamp;
-    private final String urc;
-    private final String type;
-
-    public LeapRecord(T data, long timestamp, String urc, String type) {
-        this.data = data;
-        this.timestamp = timestamp;
-        this.urc = urc;
-        this.type = type;
+public class LeapRecord<V> {
+    private LeapMetaData[] metadata;
+    private Object key;
+    private LeapEvent<V> value;
+    public LeapMetaData[] getMetadata() {
+        return metadata;
     }
 
-    public T getData() {
-        return data;
+    public void setMetadata(LeapMetaData[] metadata) {
+        this.metadata = metadata;
     }
 
-    public long getTimestamp() {
-        return timestamp;
+    public Object getKey() {
+        return key;
     }
 
-    public String getUrc() {
-        return urc;
+    public void setKey(Object key) {
+        this.key = key;
     }
 
-    public String getType() {
-        return type;
+    public LeapEvent<V> getValue() {
+        return value;
     }
 
-    @Override
-    public String toString() {
-        return "LeapRecord{" +
-                "data=" + data +
-                ", timestamp=" + timestamp +
-                ", urc='" + urc + '\'' +
-                ", type='" + type + '\'' +
-                '}';
+    public void setValue(LeapEvent<V> value) {
+        this.value = value;
     }
 
 }

@@ -10,7 +10,7 @@ public class FlinkRichMapFunction extends RichMapFunction<LeapRecord<Integer>,Le
     @Override
     public LeapRecord<Integer> map(LeapRecord<Integer> value) {
         // Custom mapping logic
-        logger.info("Value is " + value.getData());
+        logger.info("Value is " + value.getValue().getData());
         return value;
     }
 }

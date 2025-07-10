@@ -1,8 +1,10 @@
 package com.gimral.streaming.core;
 
-import com.gimral.streaming.core.function.FlinkFlatMapFunction;
-import com.gimral.streaming.core.function.FlinkMapFunction;
+import com.gimral.streaming.core.function.LeapRecordFlatMapFunction;
+import com.gimral.streaming.core.function.LeapRecordMapFunction;
 import com.gimral.streaming.core.function.FlinkRichMapFunction;
+import com.gimral.streaming.core.function.NonLeapRecordMapFunction;
+import com.gimral.streaming.core.model.LeapEvent;
 import com.gimral.streaming.core.model.LeapRecord;
 import org.apache.flink.runtime.operators.testutils.DiscardingOutputCollector;
 import org.apache.logging.log4j.core.test.appender.ListAppender;
@@ -14,16 +16,15 @@ import org.junit.jupiter.api.Test;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MapFunctionLoggingAspectTest {
 
     @Test
     @LoggerContextSource("log4j2-listappender.properties")
     public void testMapFunction(final @Named(value = "ListAppender") ListAppender appender) {
-        FlinkMapFunction mapper = new FlinkMapFunction();
-        LeapRecord<Integer> record = new LeapRecord<>(1,1,"1","map");
+        LeapRecordMapFunction mapper = new LeapRecordMapFunction();
+        LeapRecord<Integer> record = getTestRecord(1,1,"1","map");
 
         mapper.map(record);
 
@@ -35,9 +36,20 @@ public class MapFunctionLoggingAspectTest {
 
     @Test
     @LoggerContextSource("log4j2-listappender.properties")
-    public void testRichMapFuntion(final @Named(value = "ListAppender") ListAppender appender) {
+    public void testMapFunctionWithoutLeapRecordArg(final @Named(value = "ListAppender") ListAppender appender) throws Exception {
+        NonLeapRecordMapFunction mapper = new NonLeapRecordMapFunction();
+        mapper.map("1");
+
+        final LinkedHashMap<String, String> actualLoggedEvent = getFirstLoggedEvent(appender);
+
+        assertNotNull(actualLoggedEvent);
+        assertNull(actualLoggedEvent.get("urc"));
+    }
+    @Test
+    @LoggerContextSource("log4j2-listappender.properties")
+    public void testRichMapFunction(final @Named(value = "ListAppender") ListAppender appender) {
         FlinkRichMapFunction mapper = new FlinkRichMapFunction();
-        LeapRecord<Integer> record = new LeapRecord<>(1,1,"1","map");
+        LeapRecord<Integer> record = getTestRecord(1,1,"1","map");
 
         mapper.map(record);
 
@@ -50,8 +62,8 @@ public class MapFunctionLoggingAspectTest {
     @Test
     @LoggerContextSource("log4j2-listappender.properties")
     public void testFlatMapFunction(final @Named(value = "ListAppender") ListAppender appender) throws Exception {
-        FlinkFlatMapFunction mapper = new FlinkFlatMapFunction();
-        LeapRecord<Integer> record = new LeapRecord<>(1,1,"1","map");
+        LeapRecordFlatMapFunction mapper = new LeapRecordFlatMapFunction();
+        LeapRecord<Integer> record = getTestRecord(1,1,"1","map");
 
         mapper.flatMap(record,new DiscardingOutputCollector<>());
 
@@ -73,6 +85,16 @@ public class MapFunctionLoggingAspectTest {
                         .findFirst()
                         .orElse(null);
         return loggedEvent;
+    }
+    private LeapRecord<Integer> getTestRecord(Integer data, long timestamp, String urc, String type){
+        LeapRecord<Integer> record = new LeapRecord<>();
+        LeapEvent<Integer> value = new LeapEvent<>();
+        value.setData(data);
+        value.setUrc(urc);
+        value.setType(type);
+        value.setTimestamp(timestamp);
+        record.setValue(value);
+        return record;
     }
 
 
