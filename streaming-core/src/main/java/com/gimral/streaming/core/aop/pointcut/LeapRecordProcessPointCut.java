@@ -1,4 +1,4 @@
-package com.gimral.streaming.core.aop;
+package com.gimral.streaming.core.aop.pointcut;
 
 import com.gimral.streaming.core.model.LeapRecord;
 import org.aspectj.lang.ProceedingJoinPoint;

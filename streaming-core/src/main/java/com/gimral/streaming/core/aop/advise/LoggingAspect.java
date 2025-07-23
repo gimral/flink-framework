@@ -1,8 +1,10 @@
 
-package com.gimral.streaming.core.aop.advise.logging;
+package com.gimral.streaming.core.aop.advise;
 
 import com.gimral.streaming.core.logging.LeapRecordMDCInjector;
 import com.gimral.streaming.core.model.LeapRecord;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -13,10 +15,24 @@ import org.aspectj.lang.annotation.Aspect;
 @Aspect
 public class LoggingAspect {
 
-    @Around("com.gimral.streaming.core.aop.LeapRecordProcessPointCut.intercept(joinPoint, record)")
+    private final Logger logger = LogManager.getLogger(LoggingAspect.class.getName());
+
+    @Around("com.gimral.streaming.core.aop.pointcut.LeapRecordProcessPointCut.intercept(joinPoint, record)")
     public Object log(ProceedingJoinPoint joinPoint, LeapRecord<?> record) throws Throwable {
         try (LeapRecordMDCInjector ignored = LeapRecordMDCInjector.putAll(record)) {
-            return joinPoint.proceed();
+            long startTime = System.nanoTime();
+
+            Object retVal = joinPoint.proceed();
+
+            long endTime = System.nanoTime();
+            long durationInNanos = endTime - startTime;
+
+            logger.trace("Method {} executed in {} nanoseconds with record: {}",
+                         joinPoint.getSignature().toShortString(),
+                         durationInNanos,
+                         record);
+
+            return retVal;
         }
     }
 }

@@ -11,6 +11,23 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <leap.streaming.version>1.0-SNAPSHOT</leap.streaming.version>
+        <flink.kafka.version>4.0.0-2.0</flink.kafka.version>
     </properties>
+
+
+    <dependencies>
+        <dependency>
+            <groupId>com.gimral</groupId>
+            <artifactId>streaming-core</artifactId>
+            <version>${leap.streaming.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.apache.flink</groupId>
+            <artifactId>flink-connector-kafka</artifactId>
+            <version>${flink.kafka.version}</version>
+        </dependency>
+    </dependencies>
 
 </project>

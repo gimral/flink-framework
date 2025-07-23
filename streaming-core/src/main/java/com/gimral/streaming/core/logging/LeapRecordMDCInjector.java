@@ -1,4 +1,4 @@
-package com.gimral.streaming.core.aop.advise.logging;
+package com.gimral.streaming.core.logging;
 
 import com.gimral.streaming.core.model.LeapEvent;
 import com.gimral.streaming.core.model.LeapRecord;

@@ -1,6 +1,5 @@
 package com.gimral.streaming.join;
 
-import com.gimral.streaming.core.functions.LeapKeyedCoProcessFunction;
 import org.apache.flink.api.common.functions.OpenContext;
 import org.apache.flink.api.common.functions.RuntimeContext;
 import org.apache.flink.api.common.state.v2.ListState;
@@ -10,10 +9,11 @@ import org.apache.flink.api.common.state.v2.ValueStateDescriptor;
 import org.apache.flink.api.common.typeinfo.TypeHint;
 import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.api.java.tuple.Tuple2;
+import org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction;
 import org.apache.flink.util.Collector;
 
 public class OneToManyJoin<K, L, R>
-    extends LeapKeyedCoProcessFunction<K, L, R, Tuple2<K, Tuple2<L, R>>> {
+    extends KeyedCoProcessFunction<K, L, R, Tuple2<K, Tuple2<L, R>>> {
   private static final String LEFT_RECORD = "LeftRecord";
   private static final String RIGHT_RECORDS = "RightRecords";
   private static final String LEFT_TIMER = "LeftTimer";
@@ -35,23 +35,24 @@ public class OneToManyJoin<K, L, R>
   }
 
   @Override
-  public void innerOpen(OpenContext ctx) {
+  public void open(OpenContext ctx) {
     RuntimeContext runtimeCtx = getRuntimeContext();
-    leftRecordState =
-        runtimeCtx.getState(
-            new ValueStateDescriptor<>(LEFT_RECORD, TypeInformation.of(new TypeHint<>() {})));
-    rightRecordsState =
-        runtimeCtx.getListState(
-            new ListStateDescriptor<>(RIGHT_RECORDS, TypeInformation.of(new TypeHint<>() {})));
+    leftRecordState = runtimeCtx.getState(
+        new ValueStateDescriptor<>(LEFT_RECORD, TypeInformation.of(new TypeHint<>() {
+        })));
+    rightRecordsState = runtimeCtx.getListState(
+        new ListStateDescriptor<>(RIGHT_RECORDS, TypeInformation.of(new TypeHint<>() {
+        })));
     leftTimerState = runtimeCtx.getState(new ValueStateDescriptor<>(LEFT_TIMER, Long.class));
     rightTimerState = runtimeCtx.getState(new ValueStateDescriptor<>(RIGHT_TIMER, Long.class));
     joinedState = runtimeCtx.getState(new ValueStateDescriptor<>(JOINED, Boolean.class));
   }
 
   @Override
-  public void innerProcessElement1(L input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out)
+  public void processElement1(L input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out)
       throws Exception {
-    if (input == null) return;
+    if (input == null)
+      return;
     Iterable<R> rightValues = rightRecordsState.get();
     boolean matched = false;
     for (R right : rightValues) {
@@ -61,11 +62,13 @@ public class OneToManyJoin<K, L, R>
     if (matched) {
       joinedState.update(true);
       Long rightExpireTime = rightTimerState.value();
-      if (rightExpireTime != null) ctx.timerService().deleteProcessingTimeTimer(rightExpireTime);
+      if (rightExpireTime != null)
+        ctx.timerService().deleteEventTimeTimer(rightExpireTime);
       rightRecordsState.clear();
     }
     Long leftExpireTime = leftTimerState.value();
-    if (leftExpireTime != null) ctx.timerService().deleteProcessingTimeTimer(leftExpireTime);
+    if (leftExpireTime != null)
+      ctx.timerService().deleteEventTimeTimer(0);(leftExpireTime);
     long expireTime = ctx.timestamp() + leftStateDuration;
     ctx.timerService().registerEventTimeTimer(expireTime);
     leftRecordState.update(input);
@@ -73,9 +76,10 @@ public class OneToManyJoin<K, L, R>
   }
 
   @Override
-  public void innerProcessElement2(R input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out)
+  public void processElement2(R input, Context ctx, Collector<Tuple2<K, Tuple2<L, R>>> out)
       throws Exception {
-    if (input == null) return;
+    if (input == null)
+      return;
     L leftValue = leftRecordState.value();
     if (leftValue != null) {
       out.collect(Tuple2.of(ctx.getCurrentKey(), Tuple2.of(leftValue, input)));
@@ -86,7 +90,8 @@ public class OneToManyJoin<K, L, R>
     // the state
     rightRecordsState.add(input);
     Long rightExpireTime = rightTimerState.value();
-    if (rightExpireTime != null) ctx.timerService().deleteProcessingTimeTimer(rightExpireTime);
+    if (rightExpireTime != null)
+      ctx.timerService().deleteEventTimeTimer(rightExpireTime);
     long expireTime = ctx.timestamp() + rightStateDuration;
     ctx.timerService().registerEventTimeTimer(expireTime);
     rightTimerState.update(expireTime);

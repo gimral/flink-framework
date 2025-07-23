@@ -1,4 +1,4 @@
-package com.gimral.streaming.core.function;
+package com.gimral.streaming.core.helpers.function;
 
 import com.gimral.streaming.core.model.LeapRecord;
 import org.apache.flink.api.common.functions.MapFunction;

@@ -1,9 +1,9 @@
-package com.gimral.streaming.core;
+package com.gimral.streaming.core.aop;
 
-import com.gimral.streaming.core.function.LeapRecordFlatMapFunction;
-import com.gimral.streaming.core.function.LeapRecordMapFunction;
-import com.gimral.streaming.core.function.FlinkRichMapFunction;
-import com.gimral.streaming.core.function.NonLeapRecordMapFunction;
+import com.gimral.streaming.core.helpers.function.LeapRecordFlatMapFunction;
+import com.gimral.streaming.core.helpers.function.LeapRecordMapFunction;
+import com.gimral.streaming.core.helpers.function.LeapRecordRichMapFunction;
+import com.gimral.streaming.core.helpers.function.NonLeapRecordMapFunction;
 import com.gimral.streaming.core.model.LeapEvent;
 import com.gimral.streaming.core.model.LeapRecord;
 import org.apache.flink.runtime.operators.testutils.DiscardingOutputCollector;
@@ -48,7 +48,7 @@ public class LoggingAspectTest {
     @Test
     @LoggerContextSource("log4j2-listappender.properties")
     public void testRichMapFunction(final @Named(value = "ListAppender") ListAppender appender) {
-        FlinkRichMapFunction mapper = new FlinkRichMapFunction();
+        LeapRecordRichMapFunction mapper = new LeapRecordRichMapFunction();
         LeapRecord<Integer> record = getTestRecord(1,1,"1","map");
 
         mapper.map(record);
