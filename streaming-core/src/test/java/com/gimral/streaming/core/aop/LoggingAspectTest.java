@@ -18,7 +18,7 @@ import java.util.LinkedHashMap;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class MapFunctionLoggingAspectTest {
+public class LoggingAspectTest {
 
     @Test
     @LoggerContextSource("log4j2-listappender.properties")

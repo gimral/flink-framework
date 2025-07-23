@@ -5,8 +5,8 @@ import org.apache.flink.api.common.functions.RichMapFunction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class FlinkRichMapFunction extends RichMapFunction<LeapRecord<Integer>,LeapRecord<Integer>> {
-    private final Logger logger = LogManager.getLogger(FlinkRichMapFunction.class);
+public class LeapRecordRichMapFunction extends RichMapFunction<LeapRecord<Integer>,LeapRecord<Integer>> {
+    private final Logger logger = LogManager.getLogger(LeapRecordRichMapFunction.class);
     @Override
     public LeapRecord<Integer> map(LeapRecord<Integer> value) {
         // Custom mapping logic
