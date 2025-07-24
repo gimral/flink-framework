@@ -22,6 +22,8 @@ public class AccountExtensionEnricherTest {
                 new LeapRecord<>(4,1,"4","map")
         )).setParallelism(1);
 
+
+
         AccountExtensionEnricher
                 .builder()
                 .withoutFallBack()

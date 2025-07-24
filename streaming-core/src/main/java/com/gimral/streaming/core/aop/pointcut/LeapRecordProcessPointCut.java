@@ -9,11 +9,11 @@ public class LeapRecordProcessPointCut {
             // Matches MapFunction,RichMapFunction, FlatMapFunction, RichFlatMapFunction,FilterFunction, RichFilterFunction
             "(execution(* org.apache.flink.api.common.functions.MapFunction+.map(..)) && args(record)) || " +
                     "(execution(* org.apache.flink.api.common.functions.FlatMapFunction+.flatMap(..)) && args(record, *)) || " +
-                    "(execution(* org.apache.flink.api.common.functions.FilterFunction+.filter(..)) && args(record, *)) || " +
+                    "(execution(* org.apache.flink.api.common.functions.FilterFunction+.filter(..)) && args(record, *))")
                     //Matches CoProcessFunction,KeyedCoProcessFunction
-                    "(execution(* org.apache.flink.streaming.api.functions.co.CoProcessFunction+.processElement1(..)) && args(record, *)) || " +
-                    "(execution(* org.apache.flink.streaming.api.functions.co.CoProcessFunction+.processElement2(..)) && args(record, *)) || " +
-                    "(execution(* org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction+.processElement1(..)) && args(record, *)) || " +
-                    "(execution(* org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction+.processElement2(..)) && args(record, *))")
+//                    "(execution(* org.apache.flink.streaming.api.functions.co.CoProcessFunction+.processElement1(..)) && args(record, *)) || " +
+//                    "(execution(* org.apache.flink.streaming.api.functions.co.CoProcessFunction+.processElement2(..)) && args(record, *)) || " +
+//                    "(execution(* org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction+.processElement1(..)) && args(record, *)) || " +
+//                    "(execution(* org.apache.flink.streaming.api.functions.co.KeyedCoProcessFunction+.processElement2(..)) && args(record, *))")
     public void intercept(ProceedingJoinPoint joinPoint, LeapRecord<?> record) {}
 }

@@ -5,7 +5,9 @@ import com.gimral.streaming.core.helpers.function.LeapRecordMapFunction;
 import com.gimral.streaming.core.helpers.function.LeapRecordRichMapFunction;
 import com.gimral.streaming.core.helpers.function.NonLeapRecordMapFunction;
 import com.gimral.streaming.core.model.LeapEvent;
+import com.gimral.streaming.core.model.LeapInternalRecord;
 import com.gimral.streaming.core.model.LeapRecord;
+import com.gimral.streaming.core.model.LogLeapEvent;
 import org.apache.flink.runtime.operators.testutils.DiscardingOutputCollector;
 import org.apache.logging.log4j.core.test.appender.ListAppender;
 import org.apache.logging.log4j.core.test.junit.LoggerContextSource;
@@ -24,8 +26,7 @@ public class LoggingAspectTest {
     @LoggerContextSource("log4j2-listappender.properties")
     public void testMapFunction(final @Named(value = "ListAppender") ListAppender appender) {
         LeapRecordMapFunction mapper = new LeapRecordMapFunction();
-        LeapRecord<Integer> record = getTestRecord(1,1,"1","map");
-
+        LeapRecord<LogLeapEvent> record = LogLeapEvent.getTestRecord(1,1,"1","map");
         mapper.map(record);
 
         final LinkedHashMap<String, String> actualLoggedEvent = getFirstLoggedEvent(appender);
@@ -49,7 +50,7 @@ public class LoggingAspectTest {
     @LoggerContextSource("log4j2-listappender.properties")
     public void testRichMapFunction(final @Named(value = "ListAppender") ListAppender appender) {
         LeapRecordRichMapFunction mapper = new LeapRecordRichMapFunction();
-        LeapRecord<Integer> record = getTestRecord(1,1,"1","map");
+        LeapRecord<LogLeapEvent> record = LogLeapEvent.getTestRecord(1,1,"1","map");
 
         mapper.map(record);
 
@@ -63,7 +64,7 @@ public class LoggingAspectTest {
     @LoggerContextSource("log4j2-listappender.properties")
     public void testFlatMapFunction(final @Named(value = "ListAppender") ListAppender appender) throws Exception {
         LeapRecordFlatMapFunction mapper = new LeapRecordFlatMapFunction();
-        LeapRecord<Integer> record = getTestRecord(1,1,"1","map");
+        LeapRecord<LogLeapEvent> record = LogLeapEvent.getTestRecord(1,1,"1","map");
 
         mapper.flatMap(record,new DiscardingOutputCollector<>());
 
@@ -85,16 +86,6 @@ public class LoggingAspectTest {
                         .findFirst()
                         .orElse(null);
         return loggedEvent;
-    }
-    private LeapRecord<Integer> getTestRecord(Integer data, long timestamp, String urc, String type){
-        LeapRecord<Integer> record = new LeapRecord<>();
-        LeapEvent<Integer> value = new LeapEvent<>();
-        value.setData(data);
-        value.setUrc(urc);
-        value.setType(type);
-        value.setTimestamp(timestamp);
-        record.setValue(value);
-        return record;
     }
 
 
