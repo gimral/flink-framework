@@ -17,15 +17,17 @@ public class LeapRecordMDCInjector implements Closeable {
     private static final String MDC_METADATA = "metadata";
 
     public static LeapRecordMDCInjector putAll(LeapRecord<?> record) {
-        if (record != null) {
-            LeapEvent<?> event = record.getValue();
-            if (event != null) {
-                putIfNotNull(MDC_URC, event.getUrc());
-                putIfNotNull(MDC_TIMESTAMP, event.getTimestamp() != null ? event.getTimestamp().toString() : null);
-                putIfNotNull(MDC_TYPE, event.getType());
-            }
-            putIfNotNull(MDC_METADATA, record.getMetadata() != null ? Arrays.toString(record.getMetadata()) : null);
-        }
+        if(record == null)
+            return new LeapRecordMDCInjector();
+
+        putIfNotNull(MDC_METADATA, record.getMetadata() != null ? Arrays.toString(record.getMetadata()) : null);
+
+        if (!(record.getValue() instanceof LeapEvent<?> event))
+            return new LeapRecordMDCInjector();
+
+        putIfNotNull(MDC_URC, event.getUrc());
+        putIfNotNull(MDC_TIMESTAMP, event.getTimestamp() != null ? event.getTimestamp().toString() : null);
+        putIfNotNull(MDC_TYPE, event.getType());
         return new LeapRecordMDCInjector();
     }
 

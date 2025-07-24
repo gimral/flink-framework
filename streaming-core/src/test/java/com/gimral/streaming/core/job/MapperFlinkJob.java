@@ -12,7 +12,6 @@ import java.util.Iterator;
 import java.util.List;
 
 public class MapperFlinkJob extends LeapFlinkJob {
-
     private List<LeapRecord<LogLeapEvent>> result;
 
     @Override
@@ -32,6 +31,7 @@ public class MapperFlinkJob extends LeapFlinkJob {
             while (it.hasNext()) {
                 result.add(it.next());
             }
+            System.out.println(result);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

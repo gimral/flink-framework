@@ -4,8 +4,6 @@ import com.gimral.streaming.core.helpers.function.LeapRecordFlatMapFunction;
 import com.gimral.streaming.core.helpers.function.LeapRecordMapFunction;
 import com.gimral.streaming.core.helpers.function.LeapRecordRichMapFunction;
 import com.gimral.streaming.core.helpers.function.NonLeapRecordMapFunction;
-import com.gimral.streaming.core.model.LeapEvent;
-import com.gimral.streaming.core.model.LeapInternalRecord;
 import com.gimral.streaming.core.model.LeapRecord;
 import com.gimral.streaming.core.model.LogLeapEvent;
 import org.apache.flink.runtime.operators.testutils.DiscardingOutputCollector;

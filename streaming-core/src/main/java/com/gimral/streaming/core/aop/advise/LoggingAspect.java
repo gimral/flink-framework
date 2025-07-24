@@ -18,7 +18,7 @@ public class LoggingAspect {
     private final Logger logger = LogManager.getLogger(LoggingAspect.class.getName());
 
     @Around("com.gimral.streaming.core.aop.pointcut.LeapRecordProcessPointCut.intercept(joinPoint, record)")
-    public Object log(ProceedingJoinPoint joinPoint, LeapRecord<?> record) throws Throwable {
+    public Object loggingIntercept(ProceedingJoinPoint joinPoint, LeapRecord<?> record) throws Throwable {
         try (LeapRecordMDCInjector ignored = LeapRecordMDCInjector.putAll(record)) {
             long startTime = System.nanoTime();
 
