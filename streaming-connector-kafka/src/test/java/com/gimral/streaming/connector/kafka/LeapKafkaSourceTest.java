@@ -7,6 +7,9 @@ import io.github.embeddedkafka.EmbeddedKafkaConfigImpl;
 import io.github.embeddedkafka.EmbeddedKafka;
 
 import org.apache.flink.api.common.eventtime.WatermarkStrategy;
+import org.apache.flink.api.common.functions.MapFunction;
+import org.apache.flink.api.common.typeinfo.TypeHint;
+import org.apache.flink.api.common.typeinfo.TypeInformation;
 import org.apache.flink.connector.kafka.source.KafkaSource;
 import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.streaming.api.datastream.DataStream;
@@ -17,6 +20,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 import scala.collection.immutable.HashMap;
 import scala.collection.immutable.HashMap$;
+
+import java.util.Arrays;
 
 public class LeapKafkaSourceTest {
     @RegisterExtension
@@ -51,24 +56,35 @@ public class LeapKafkaSourceTest {
     public void testDeserialization() throws Exception {
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
 
-        KafkaSource<LeapRecord<EntityA>> source = LeapKafkaSource.from(TEST_TOPIC, "localhost:" + KAFKA_PORT, EntityA.class);
 
-        DataStream<LeapRecord<EntityA>> ds =  env.
-                fromSource(source, WatermarkStrategy.noWatermarks(), "kafkaSource");
 
-//        DataStream<LeapInternalRecord<Integer>> ds = env.fromData(Arrays.asList(
-//                getInternalTestRecord(1,1,"1","map"),
-//                getInternalTestRecord(2,1,"2","map"),
-//                getInternalTestRecord(3,1,"3","map"),
-//                getInternalTestRecord(4,1,"4","map")
-//        )).setParallelism(1);
+//        KafkaSource<LeapRecord<String>> source = LeapKafkaSource.from(TEST_TOPIC, "localhost:" + KAFKA_PORT, String.class);
 //
+//        DataStream<LeapRecord<String>> ds =  env.
+//                fromSource(source, WatermarkStrategy.noWatermarks(), "kafkaSource");
+
+        DataStream<LeapRecord<Integer>> ds = env.fromData(Arrays.asList(
+                getInternalTestRecord(1,1,"1","map"),
+                getInternalTestRecord(2,1,"2","map"),
+                getInternalTestRecord(3,1,"3","map"),
+                getInternalTestRecord(4,1,"4","map")
+        )).setParallelism(1);
+
+        ds = ds.map(new MapFunction<LeapRecord<Integer>, LeapRecord<Integer>>() {
+            @Override
+            public LeapRecord<Integer> map(LeapRecord<Integer> r) throws Exception {
+                System.out.println("Received record: " + r);
+                return r;
+            }
+        });
+
 //        ds = ds.map(r -> {
 //            System.out.println("Received record: " + r);
 //            return r;
 //        })
-//                .returns(TypeInformation.of(new TypeHint<LeapInternalRecord<Integer>>() {
-//        }));
+////                .returns(TypeInformation.of(new TypeHint<LeapRecord<Integer>>() {
+////        }))
+//        ;
 
         env.execute();
 

@@ -15,6 +15,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <flink.version>2.0.0</flink.version>
         <leap.streaming.version>1.0-SNAPSHOT</leap.streaming.version>
+        <junit.version>5.10.2</junit.version>
         <log4j.version>2.25.0</log4j.version>
         <aspectj.version>1.9.24</aspectj.version>
     </properties>
@@ -95,7 +96,7 @@
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
-            <version>5.10.2</version>
+            <version>${junit.version}</version>
             <scope>test</scope>
         </dependency>
         <dependency>

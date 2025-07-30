@@ -1,6 +1,9 @@
 package com.gimral.streaming.connector.kafka;
 
+import com.fasterxml.jackson.databind.JavaType;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.type.TypeFactory;
+import com.gimral.streaming.core.model.LeapEvent;
 import com.gimral.streaming.core.model.LeapRecord;
 import com.gimral.streaming.core.model.LeapMetaData;
 import org.apache.flink.api.common.serialization.DeserializationSchema;
@@ -30,9 +33,9 @@ public class LeapJSONDeserializationSchema<T> implements KafkaRecordDeserializat
     public void deserialize(ConsumerRecord<byte[], byte[]> consumerRecord, Collector<LeapRecord<T>> collector)
             throws IOException {
         byte[] valueBytes = consumerRecord.value();
-        if (valueBytes == null) {
-            return;
-        }
+
+        TypeFactory typeFactory = mapper.getTypeFactory();
+        JavaType recordType = typeFactory.constructParametricType(LeapEvent.class, valueClass);
 
         // Deserialize value to T
         T value = mapper.readValue(valueBytes, valueClass);
@@ -52,7 +55,7 @@ public class LeapJSONDeserializationSchema<T> implements KafkaRecordDeserializat
                 key = keyBytes;
             }
         }
-        record.setKey(key);
+        record.setKey(String.valueOf(key));
 
         // Set metadata
         LeapMetaData meta = new LeapMetaData();
