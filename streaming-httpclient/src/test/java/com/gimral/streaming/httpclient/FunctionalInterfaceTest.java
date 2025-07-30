@@ -42,13 +42,13 @@ public class FunctionalInterfaceTest {
         AsyncDataStream.unorderedWait(ds, enrichmentFunction, 1000, TimeUnit.MILLISECONDS, 100)
             .returns(String.class);
 
-      AsyncRetryStrategy asyncRetryStrategy =
-              new AsyncRetryStrategies.FixedDelayRetryStrategyBuilder(3, 100L) // maxAttempts=3, fixedDelay=100ms
-                      .ifResult(RetryPredicates.EMPTY_RESULT_PREDICATE)
-                      .ifException(RetryPredicates.HAS_EXCEPTION_PREDICATE)
-                      .build();
+    AsyncRetryStrategy asyncRetryStrategy =
+        new AsyncRetryStrategies.FixedDelayRetryStrategyBuilder(
+                3, 100L) // maxAttempts=3, fixedDelay=100ms
+            .ifResult(RetryPredicates.EMPTY_RESULT_PREDICATE)
+            .ifException(RetryPredicates.HAS_EXCEPTION_PREDICATE)
+            .build();
 
-
-      env.execute();
+    env.execute();
   }
 }
