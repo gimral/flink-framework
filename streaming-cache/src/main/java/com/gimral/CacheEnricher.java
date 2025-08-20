@@ -1,7 +1,6 @@
 package com.gimral;
 
 import com.gimral.streaming.httpclient.HttpClientEnricher;
-import com.gimral.streaming.httpclient.HttpClientEnricherErrorHandler;
 import com.gimral.streaming.httpclient.HttpClientEnricherRequestSetup;
 import com.gimral.streaming.httpclient.HttpClientEnricherSuccessHandler;
 import org.apache.flink.streaming.api.functions.async.ResultFuture;
@@ -9,39 +8,29 @@ import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 
 import java.util.Collections;
 
-public class CacheEnricher<I, O, T> extends RichAsyncFunction<I, O> {
+public abstract class CacheEnricher<I, O, T> extends RichAsyncFunction<I, O> {
 
+    private final CacheEnricherKeyProvider<I> keyProvider;
     private final CacheEnricherSuccessHandler<I, O, T> successCallback;
     private final CacheEnricherErrorHandler<I, O> errorCallback;
     private HttpClientEnricher<I, O> fallbackEnricher;
 
 
-    public CacheEnricher(CacheEnricherSuccessHandler<I, O, T> successCallback, CacheEnricherErrorHandler<I, O> errorCallback) {
+    public CacheEnricher(CacheEnricherKeyProvider<I> keyProvider,
+                         CacheEnricherSuccessHandler<I, O, T> successCallback,
+                         CacheEnricherErrorHandler<I, O> errorCallback) {
+        this.keyProvider = keyProvider;
         this.successCallback = successCallback;
         this.errorCallback = errorCallback;
         this.fallbackEnricher = null;
     }
 
     public void setupFallbackEnricher(HttpClientEnricherRequestSetup<I> requestSetup,
-                                      HttpClientEnricherSuccessHandler<I, O> successCallbackFallback,
-                                      HttpClientEnricherErrorHandler<I, O> errorCallbackFallback) {
+                                      HttpClientEnricherSuccessHandler<I, O> successCallbackFallback) {
         this.fallbackEnricher = new HttpClientEnricher<>(
                 requestSetup,
                 successCallbackFallback,
-                errorCallbackFallback
-        );
-    }
-
-    public CacheEnricher(CacheEnricherSuccessHandler<I, O, T> successCallback, CacheEnricherErrorHandler<I, O> errorCallback,
-                         HttpClientEnricherRequestSetup<I> requestSetup,
-                         HttpClientEnricherSuccessHandler<I, O> successCallbackFallback,
-                         HttpClientEnricherErrorHandler<I, O> errorCallbackFallback) {
-        this.successCallback = successCallback;
-        this.errorCallback = errorCallback;
-        this.fallbackEnricher = new HttpClientEnricher<>(
-                requestSetup,
-                successCallbackFallback,
-                errorCallbackFallback
+                errorCallback::onError
         );
     }
 
@@ -50,8 +39,8 @@ public class CacheEnricher<I, O, T> extends RichAsyncFunction<I, O> {
     public void asyncInvoke(I input, ResultFuture<O> resultFuture) throws Exception {
         try {
             //perform cache operation here
-            //T result = performCacheOperation(input);
-            T result = null;
+            String key = keyProvider.getKey(input);
+            T result = performCacheOperation(key);
             O output = successCallback.onSuccess(result, input);
             resultFuture.complete(Collections.singletonList(output));
         } catch (Exception e) {
@@ -66,6 +55,8 @@ public class CacheEnricher<I, O, T> extends RichAsyncFunction<I, O> {
             resultFuture.complete(Collections.singletonList(output));
         }
     }
+
+    public abstract T performCacheOperation(String key) throws Exception;
 
     @Override
     public void timeout(I input, ResultFuture<O> resultFuture) throws Exception {

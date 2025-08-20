@@ -11,5 +11,5 @@ public interface HttpClientEnricherRequestSetup<I> extends Serializable {
    * @param requestBuilder The Request.Builder instance to configure the HTTP request.
    * @throws Exception If an error occurs during setup.
    */
-  public void setup(Request.Builder requestBuilder, I input) throws Exception;
+  public void setup(Request.Builder requestBuilder, I input);
 }

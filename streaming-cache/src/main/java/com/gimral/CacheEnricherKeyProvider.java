@@ -4,11 +4,9 @@ import java.io.IOException;
 import java.io.Serializable;
 
 @FunctionalInterface
-public interface CacheEnricherSuccessHandler<I, O, T> extends Serializable {
+public interface CacheEnricherKeyProvider<I> extends Serializable {
   /**
    * This method is called when the Cache request is successful.
-   *
-   * @param result The response from the cache request.
    */
-  O onSuccess(T result, I input);
+  String getKey(I input);
 }

@@ -8,5 +8,5 @@ public interface CacheEnricherErrorHandler<I, O> extends Serializable {
   /**
    * This method is called when the Cache request is not successful.
    */
-  O onError(I input) throws IOException;
+  O onError(I input);
 }
