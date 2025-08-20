@@ -4,7 +4,7 @@ import java.io.Serializable;
 import okhttp3.Request;
 
 @FunctionalInterface
-public interface RequestSetup<I> extends Serializable {
+public interface HttpClientEnricherRequestSetup<I> extends Serializable {
   /**
    * This method is called to set up the HTTP request.
    *

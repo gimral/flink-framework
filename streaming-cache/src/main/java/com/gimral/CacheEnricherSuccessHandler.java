@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.Serializable;
 
 @FunctionalInterface
-public interface SuccessHandler<I, O, T> extends Serializable {
+public interface CacheEnricherSuccessHandler<I, O, T> extends Serializable {
   /**
    * This method is called when the Cache request is successful.
    *

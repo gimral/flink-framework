@@ -1,24 +1,28 @@
 package com.gimral;
 
-import org.apache.flink.api.common.functions.MapFunction;
+import com.gimral.streaming.httpclient.HttpClientEnricherErrorHandler;
+import com.gimral.streaming.httpclient.HttpClientEnricherRequestSetup;
+import com.gimral.streaming.httpclient.HttpClientEnricherSuccessHandler;
 
-public class AccountExtensionEnricher<I,O> implements MapFunction<I, O> {
+public class AccountExtensionEnricher<I, O> extends CacheEnricher<I, O, AccountExtension> {
 
-    private final CacheMapper<I,O,String> mapper;
-
-    public AccountExtensionEnricher(CacheMapper<I,O,String> mapper) {
-        // Constructor logic if needed
-        this.mapper = mapper;
+    public AccountExtensionEnricher(CacheEnricherSuccessHandler<I, O, AccountExtension> successCallback,
+                                    CacheEnricherErrorHandler<I, O> errorCallback) {
+        super(successCallback, errorCallback);
+        setupFallbackEnricher(
+                getFallbackRequestSetup(),
+                getFallbackSuccessCallback(),
+                getFallbackErrorCallback()
+        );
     }
 
-    @Override
-    public O map(I value) throws Exception {
-        //Redis Call
-        //Bawaba Call
-        //Retries
-        String s = "Enriching value: " + value.toString();
-
-
-        return mapper.map(value, s);
+    HttpClientEnricherSuccessHandler<I, O> getFallbackSuccessCallback() {
+        return (input, accountExtension) -> null; // Default implementation
+    }
+    static <I, O> HttpClientEnricherErrorHandler<I, O> getFallbackErrorCallback() {
+        return (input) -> null; // Default implementation
+    }
+    static <I> HttpClientEnricherRequestSetup<I> getFallbackRequestSetup() {
+        return (requestBuilder, input) -> {}; // Default implementation
     }
 }

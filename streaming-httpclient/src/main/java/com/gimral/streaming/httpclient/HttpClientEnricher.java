@@ -8,22 +8,23 @@ import org.apache.flink.streaming.api.functions.async.ResultFuture;
 import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 import org.jetbrains.annotations.NotNull;
 
-public class HttpClientEnrichmentFunction<I, O> extends RichAsyncFunction<I, O> {
+public class HttpClientEnricher<I, O> extends RichAsyncFunction<I, O> {
   private transient OkHttpClient httpClient;
 
-  private final RequestSetup<I> requestSetup;
-  private final SuccessHandler<I, O> successCallback;
-  private final ErrorHandler<O> errorCallback;
+  private final HttpClientEnricherRequestSetup<I> requestSetup;
+  private final HttpClientEnricherSuccessHandler<I, O> successCallback;
+  private final HttpClientEnricherErrorHandler<I, O> errorCallback;
 
-  public HttpClientEnrichmentFunction(
-      RequestSetup<I> requestSetup, SuccessHandler<I, O> successCallback) {
-    this(requestSetup, successCallback, () -> null);
+  public HttpClientEnricher(
+      HttpClientEnricherRequestSetup<I> requestSetup,
+      HttpClientEnricherSuccessHandler<I, O> successCallback) {
+    this(requestSetup, successCallback, (input) -> null);
   }
 
-  public HttpClientEnrichmentFunction(
-      RequestSetup<I> requestSetup,
-      SuccessHandler<I, O> successCallback,
-      ErrorHandler<O> errorCallback) {
+  public HttpClientEnricher(
+      HttpClientEnricherRequestSetup<I> requestSetup,
+      HttpClientEnricherSuccessHandler<I, O> successCallback,
+      HttpClientEnricherErrorHandler<I, O> errorCallback) {
     this.requestSetup = requestSetup;
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
@@ -80,7 +81,7 @@ public class HttpClientEnrichmentFunction<I, O> extends RichAsyncFunction<I, O> 
   @Override
   public void timeout(I input, ResultFuture<O> resultFuture) {
     System.out.println("Timeout occurred for input: " + input);
-    O output = errorCallback.onError();
+    O output = errorCallback.onError(input);
     resultFuture.complete(Collections.singleton(output));
   }
 }

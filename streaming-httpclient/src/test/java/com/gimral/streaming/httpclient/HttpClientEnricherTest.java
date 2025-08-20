@@ -2,26 +2,23 @@ package com.gimral.streaming.httpclient;
 
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
-import org.apache.flink.runtime.testutils.MiniClusterResourceConfiguration;
 import org.apache.flink.streaming.api.datastream.AsyncDataStream;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 import org.apache.flink.streaming.api.functions.async.AsyncRetryStrategy;
 import org.apache.flink.streaming.util.retryable.AsyncRetryStrategies;
 import org.apache.flink.streaming.util.retryable.RetryPredicates;
-import org.apache.flink.test.junit5.MiniClusterExtension;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class HttpClientEnrichmentFunctionTest {
+public class HttpClientEnricherTest {
 
-//  @RegisterExtension
-//  public static final MiniClusterExtension MINI_CLUSTER =
-//      new MiniClusterExtension(
-//          new MiniClusterResourceConfiguration.Builder()
-//              .setNumberTaskManagers(1)
-//              .setNumberSlotsPerTaskManager(2)
-//              .build());
+  //  @RegisterExtension
+  //  public static final MiniClusterExtension MINI_CLUSTER =
+  //      new MiniClusterExtension(
+  //          new MiniClusterResourceConfiguration.Builder()
+  //              .setNumberTaskManagers(1)
+  //              .setNumberSlotsPerTaskManager(2)
+  //              .build());
 
   @Test
   public void testFunctionalInterfaces() throws Exception {
@@ -29,15 +26,15 @@ public class HttpClientEnrichmentFunctionTest {
     StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     DataStream<String> ds = env.fromData(Arrays.asList("1", "2", "3")).setParallelism(1);
 
-    HttpClientEnrichmentFunction<String, String> enrichmentFunction =
-        new HttpClientEnrichmentFunction<>(
+    HttpClientEnricher<String, String> enrichmentFunction =
+        new HttpClientEnricher<>(
             (requestBuilder, input) -> requestBuilder.url("https://apiy.restful-api.dev/objects"),
             (response, input) -> {
               // Assuming the response body is a String for simplicity
               System.out.println("Response received: " + response.string());
               return input;
             },
-            () -> "default_value");
+            (input) -> "default_value");
 
     //noinspection unchecked
     AsyncRetryStrategy<String> retryStrategy =
@@ -52,11 +49,11 @@ public class HttpClientEnrichmentFunctionTest {
                 ds, enrichmentFunction, 5000L, TimeUnit.MILLISECONDS, 10, retryStrategy)
             .returns(String.class);
 
-//    enriched
-//        .executeAndCollect()
-//        .forEachRemaining(result -> System.out.println("Enriched result: " + result));
+    //    enriched
+    //        .executeAndCollect()
+    //        .forEachRemaining(result -> System.out.println("Enriched result: " + result));
 
-        env.executeAsync();
+    env.executeAsync();
 
     Thread.sleep(6000);
   }

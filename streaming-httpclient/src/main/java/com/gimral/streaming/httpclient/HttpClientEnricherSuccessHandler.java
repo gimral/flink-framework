@@ -5,7 +5,7 @@ import java.io.Serializable;
 import okhttp3.ResponseBody;
 
 @FunctionalInterface
-public interface SuccessHandler<I, O> extends Serializable {
+public interface HttpClientEnricherSuccessHandler<I, O> extends Serializable {
   /**
    * This method is called when the HTTP request is successful.
    *

@@ -21,6 +21,12 @@
       <version>1.0-SNAPSHOT</version>
     </dependency>
 
+    <dependency>
+      <groupId>com.gimral</groupId>
+      <artifactId>streaming-httpclient</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+
     <!-- JUnit Jupiter for testing -->
     <dependency>
       <groupId>org.junit.jupiter</groupId>
