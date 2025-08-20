@@ -55,7 +55,8 @@ public class HttpClientEnrichmentFunction<I, O> extends RichAsyncFunction<I, O> 
           @Override
           public void onFailure(@NotNull Call call, @NotNull IOException e) {
             // Handle failure (e.g., network error)
-            resultFuture.completeExceptionally(e);
+            System.out.println("Failure");
+            resultFuture.complete(Collections.emptyList());
           }
 
           @Override
@@ -68,6 +69,7 @@ public class HttpClientEnrichmentFunction<I, O> extends RichAsyncFunction<I, O> 
             } else {
               // Handle non-successful response (e.g., 4xx, 5xx errors). Empty result may get
               // retried.
+              System.out.println("Response not successful: " + response.code());
               resultFuture.complete(Collections.emptyList());
             }
             response.close();
@@ -77,6 +79,7 @@ public class HttpClientEnrichmentFunction<I, O> extends RichAsyncFunction<I, O> 
 
   @Override
   public void timeout(I input, ResultFuture<O> resultFuture) {
+    System.out.println("Timeout occurred for input: " + input);
     O output = errorCallback.onError();
     resultFuture.complete(Collections.singleton(output));
   }

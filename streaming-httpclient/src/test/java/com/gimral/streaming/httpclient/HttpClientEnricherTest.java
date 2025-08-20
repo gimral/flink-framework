@@ -13,24 +13,25 @@ import org.apache.flink.test.junit5.MiniClusterExtension;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
 
-public class FunctionalInterfaceTest {
+public class HttpClientEnrichmentFunctionTest {
 
-  @RegisterExtension
-  public static final MiniClusterExtension MINI_CLUSTER =
-      new MiniClusterExtension(
-          new MiniClusterResourceConfiguration.Builder()
-              .setNumberTaskManagers(1)
-              .setNumberSlotsPerTaskManager(2)
-              .build());
+//  @RegisterExtension
+//  public static final MiniClusterExtension MINI_CLUSTER =
+//      new MiniClusterExtension(
+//          new MiniClusterResourceConfiguration.Builder()
+//              .setNumberTaskManagers(1)
+//              .setNumberSlotsPerTaskManager(2)
+//              .build());
 
   @Test
   public void testFunctionalInterfaces() throws Exception {
+
     StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
     DataStream<String> ds = env.fromData(Arrays.asList("1", "2", "3")).setParallelism(1);
 
     HttpClientEnrichmentFunction<String, String> enrichmentFunction =
         new HttpClientEnrichmentFunction<>(
-            (requestBuilder, input) -> requestBuilder.url("https://api.restful-api.dev/objects"),
+            (requestBuilder, input) -> requestBuilder.url("https://apiy.restful-api.dev/objects"),
             (response, input) -> {
               // Assuming the response body is a String for simplicity
               System.out.println("Response received: " + response.string());
@@ -38,17 +39,25 @@ public class FunctionalInterfaceTest {
             },
             () -> "default_value");
 
-    DataStream<String> enriched =
-        AsyncDataStream.unorderedWait(ds, enrichmentFunction, 1000, TimeUnit.MILLISECONDS, 100)
-            .returns(String.class);
-
-    AsyncRetryStrategy asyncRetryStrategy =
-        new AsyncRetryStrategies.FixedDelayRetryStrategyBuilder(
-                3, 100L) // maxAttempts=3, fixedDelay=100ms
+    //noinspection unchecked
+    AsyncRetryStrategy<String> retryStrategy =
+        new AsyncRetryStrategies.FixedDelayRetryStrategyBuilder<String>(
+                10, 1000L) // maxAttempts=3, fixedDelay=1000ms
             .ifResult(RetryPredicates.EMPTY_RESULT_PREDICATE)
             .ifException(RetryPredicates.HAS_EXCEPTION_PREDICATE)
             .build();
 
-    env.execute();
+    DataStream<String> enriched =
+        AsyncDataStream.unorderedWaitWithRetry(
+                ds, enrichmentFunction, 5000L, TimeUnit.MILLISECONDS, 10, retryStrategy)
+            .returns(String.class);
+
+//    enriched
+//        .executeAndCollect()
+//        .forEachRemaining(result -> System.out.println("Enriched result: " + result));
+
+        env.executeAsync();
+
+    Thread.sleep(6000);
   }
 }
