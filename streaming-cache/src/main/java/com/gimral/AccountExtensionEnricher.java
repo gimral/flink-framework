@@ -23,8 +23,7 @@ public class AccountExtensionEnricher<I, O> extends RedisEnricher<I, O, AccountE
     HttpClientEnricherSuccessHandler<I, O> getFallbackSuccessCallback() {
         return (response, input) -> null; // Default implementation
     }
-
-    static <I> HttpClientEnricherRequestSetup<I> getFallbackRequestSetup() {
+    HttpClientEnricherRequestSetup<I> getFallbackRequestSetup() {
         return (requestBuilder, input) -> {}; // Default implementation
     }
 }

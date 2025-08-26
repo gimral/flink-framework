@@ -11,5 +11,5 @@ public interface HttpClientEnricherSuccessHandler<I, O> extends Serializable {
    *
    * @param result The response from the HTTP request.
    */
-  O onSuccess(ResponseBody result, I input);
+  O onSuccess(ResponseBody result, I input) throws IOException;
 }

@@ -8,16 +8,16 @@ import org.apache.flink.streaming.api.functions.async.RichAsyncFunction;
 
 import java.util.Collections;
 
-public abstract class CacheEnricher<I, O, T> extends RichAsyncFunction<I, O> {
+public abstract class CacheEnricher<I, O, C> extends RichAsyncFunction<I, O> {
 
     private final CacheEnricherKeyProvider<I> keyProvider;
-    private final CacheEnricherSuccessHandler<I, O, T> successCallback;
+    private final CacheEnricherSuccessHandler<I, O, C> successCallback;
     private final CacheEnricherErrorHandler<I, O> errorCallback;
     private HttpClientEnricher<I, O> fallbackEnricher;
 
 
     public CacheEnricher(CacheEnricherKeyProvider<I> keyProvider,
-                         CacheEnricherSuccessHandler<I, O, T> successCallback,
+                         CacheEnricherSuccessHandler<I, O, C> successCallback,
                          CacheEnricherErrorHandler<I, O> errorCallback) {
         this.keyProvider = keyProvider;
         this.successCallback = successCallback;
@@ -40,7 +40,7 @@ public abstract class CacheEnricher<I, O, T> extends RichAsyncFunction<I, O> {
         try {
             //perform cache operation here
             String key = keyProvider.getKey(input);
-            T result = performCacheOperation(key);
+            C result = performCacheOperation(key);
             O output = successCallback.onSuccess(result, input);
             resultFuture.complete(Collections.singletonList(output));
         } catch (Exception e) {
@@ -56,7 +56,7 @@ public abstract class CacheEnricher<I, O, T> extends RichAsyncFunction<I, O> {
         }
     }
 
-    public abstract T performCacheOperation(String key) throws Exception;
+    public abstract C performCacheOperation(String key) throws Exception;
 
     @Override
     public void timeout(I input, ResultFuture<O> resultFuture) throws Exception {
