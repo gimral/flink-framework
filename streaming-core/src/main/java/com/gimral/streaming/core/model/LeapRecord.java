@@ -1,12 +1,11 @@
 package com.gimral.streaming.core.model;
 
-import org.apache.flink.api.common.typeinfo.TypeInfo;
-
-//@TypeInfo(LeapRecordTypeInfoFactory.class)
+// @TypeInfo(LeapRecordTypeInfoFactory.class)
 public class LeapRecord<V> {
     private LeapMetaData[] metadata;
     private String key;
     private V value;
+
     public LeapMetaData[] getMetadata() {
         return metadata;
     }
@@ -30,5 +29,4 @@ public class LeapRecord<V> {
     public void setValue(V value) {
         this.value = value;
     }
-
 }

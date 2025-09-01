@@ -6,7 +6,7 @@ public class LeapMetaData {
     private String offset;
     private String timestamp;
 
-    public LeapMetaData(){}
+    public LeapMetaData() {}
 
     public String getSource() {
         return source;

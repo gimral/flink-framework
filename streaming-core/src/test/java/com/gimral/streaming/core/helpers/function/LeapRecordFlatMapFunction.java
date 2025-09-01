@@ -1,18 +1,18 @@
 package com.gimral.streaming.core.helpers.function;
 
-import com.gimral.streaming.core.model.LeapRecord;
-import com.gimral.streaming.core.model.LogLeapEvent;
+import com.gimral.streaming.core.model.LeapEventIntRecord;
 import org.apache.flink.api.common.functions.FlatMapFunction;
 import org.apache.flink.util.Collector;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class LeapRecordFlatMapFunction implements FlatMapFunction<LeapRecord<LogLeapEvent>,LeapRecord<LogLeapEvent>> {
+public class LeapRecordFlatMapFunction
+        implements FlatMapFunction<LeapEventIntRecord, LeapEventIntRecord> {
     private final Logger logger = LogManager.getLogger(LeapRecordFlatMapFunction.class);
 
     @Override
-    public void flatMap(LeapRecord<LogLeapEvent> value, Collector<LeapRecord<LogLeapEvent>> out) throws Exception {
-        // Custom mapping logic
+    public void flatMap(LeapEventIntRecord value, Collector<LeapEventIntRecord> out)
+            throws Exception {
         logger.info("Value is " + value.getValue().getData());
         out.collect(value);
     }

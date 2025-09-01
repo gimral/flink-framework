@@ -4,12 +4,13 @@ import org.apache.flink.api.common.functions.MapFunction;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-public class NonLeapRecordMapFunction implements MapFunction<String,String> {
+public class NonLeapRecordMapFunction implements MapFunction<Integer, Integer> {
     private final Logger logger = LogManager.getLogger(LeapRecordMapFunction.class);
+
     @Override
-    public String map(String value) {
+    public Integer map(Integer value) {
         // Custom mapping logic
         logger.info("Value is " + value);
-        return value;
+        return value * 2;
     }
 }

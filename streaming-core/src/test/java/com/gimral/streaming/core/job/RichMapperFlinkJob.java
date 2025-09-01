@@ -1,19 +1,19 @@
-//package com.gimral.streaming.core.job;
+// package com.gimral.streaming.core.job;
 //
-//import com.gimral.streaming.core.LeapFlinkJob;
-//import com.gimral.streaming.core.model.LeapRecord;
-//import org.apache.flink.api.common.functions.OpenContext;
-//import org.apache.flink.api.common.functions.RichMapFunction;
-//import org.apache.flink.streaming.api.datastream.DataStream;
-//import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
-//import org.apache.logging.log4j.LogManager;
-//import org.apache.logging.log4j.Logger;
+// import com.gimral.streaming.core.LeapFlinkJob;
+// import com.gimral.streaming.core.model.LeapRecord;
+// import org.apache.flink.api.common.functions.OpenContext;
+// import org.apache.flink.api.common.functions.RichMapFunction;
+// import org.apache.flink.streaming.api.datastream.DataStream;
+// import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
+// import org.apache.logging.log4j.LogManager;
+// import org.apache.logging.log4j.Logger;
 //
-//import java.util.Arrays;
-//import java.util.Iterator;
-//import java.util.List;
+// import java.util.Arrays;
+// import java.util.Iterator;
+// import java.util.List;
 //
-//public class RichMapperFlinkJob extends LeapFlinkJob {
+// public class RichMapperFlinkJob extends LeapFlinkJob {
 //
 //    private List<LeapRecord<Integer>> result;
 //
@@ -54,4 +54,4 @@
 //    public List<LeapRecord<Integer>> getResult() {
 //        return result;
 //    }
-//}
+// }

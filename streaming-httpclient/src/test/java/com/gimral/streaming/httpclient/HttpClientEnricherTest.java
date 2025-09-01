@@ -19,7 +19,6 @@ public class HttpClientEnricherTest {
   //              .setNumberTaskManagers(1)
   //              .setNumberSlotsPerTaskManager(2)
   //              .build());
-
   @Test
   public void testFunctionalInterfaces() throws Exception {
 

@@ -1,5 +1,6 @@
 package com.gimral.streaming.httpclient;
 
+import io.github.resilience4j.retry.Retry;
 import java.io.IOException;
 import java.util.Collections;
 import okhttp3.*;
@@ -14,6 +15,7 @@ public class HttpClientEnricher<I, O> extends RichAsyncFunction<I, O> {
   private final HttpClientEnricherRequestSetup<I> requestSetup;
   private final HttpClientEnricherSuccessHandler<I, O> successCallback;
   private final HttpClientEnricherErrorHandler<I, O> errorCallback;
+  private final DefaultHeaderAssigner<I> defaultHeaderAssigner;
 
   public HttpClientEnricher(
       HttpClientEnricherRequestSetup<I> requestSetup,
@@ -28,6 +30,7 @@ public class HttpClientEnricher<I, O> extends RichAsyncFunction<I, O> {
     this.requestSetup = requestSetup;
     this.successCallback = successCallback;
     this.errorCallback = errorCallback;
+    this.defaultHeaderAssigner = new DefaultHeaderAssigner<>();
   }
 
   @Override
@@ -46,8 +49,13 @@ public class HttpClientEnricher<I, O> extends RichAsyncFunction<I, O> {
 
   @Override
   public void asyncInvoke(I input, ResultFuture<O> resultFuture) throws Exception {
+
+    Retry retry = Retry.ofDefaults("http-call-retry");
+    retry.getEventPublisher().onRetry(e -> e.getLastThrowable());
+
     Request.Builder requestBuilder = new Request.Builder();
     requestSetup.setup(requestBuilder, input);
+    defaultHeaderAssigner.applyDefaultHeaders(requestBuilder, input);
 
     Call call = httpClient.newCall(requestBuilder.build());
 
