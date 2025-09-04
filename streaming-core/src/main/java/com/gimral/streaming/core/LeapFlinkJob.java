@@ -1,5 +1,6 @@
 package com.gimral.streaming.core;
 
+import com.gimral.streaming.core.configuration.FlinkOptions;
 import org.apache.flink.streaming.api.environment.StreamExecutionEnvironment;
 
 /** Abstract base class for Flink streaming jobs in the framework. */
@@ -21,6 +22,7 @@ public abstract class LeapFlinkJob {
      */
     public final void run(String jobName) throws Exception {
         // TODO: Ad job name to the MDC and tracing context
+        FlinkOptions.setJobName(jobName);
         StreamExecutionEnvironment env = StreamExecutionEnvironment.getExecutionEnvironment();
         build(env);
         env.execute(jobName);
