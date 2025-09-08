@@ -1,0 +1,1 @@
+mvn deploy:deploy-file -DgroupId=org.apache.flink -DartifactId=flink-dist -Dversion=2.0.0 -Durl=file:./streaming-dist/local-maven-repo/ -DrepositoryId=local-maven-repo -DupdateReleaseInfo=true -Dfile=flink-dist-2.0.0.jar
