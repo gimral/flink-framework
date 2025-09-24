@@ -22,12 +22,17 @@ RUN mvn deploy:deploy-file -DgroupId=org.apache.flink -DartifactId=flink-dist -D
 
 RUN --mount=type=cache,target=/root/.m2 mvn -f streaming-dist -DskipTests package
 
+RUN mvn dependency:copy -DexcludeTransitive=true -Dartifact=org.apache.flink:flink-connector-kafka:4.0.0-2.0 -DoutputDirectory=/workspace/libs
+RUN mvn dependency:copy -DexcludeTransitive=true -Dartifact=org.apache.kafka:kafka-clients:4.0.0 -DoutputDirectory=/workspace/libs
+
 
 # Stage 3: runtime based on Flink 2.0
 FROM flink:2.0.0
 
 # We copy any JAR produced by the streaming-runtime module into the Flink lib.
 COPY --from=build /workspace/streaming-dist/target/flink-dist-*.jar /opt/flink/lib/
+COPY --from=build /workspace/streaming-dist/target/flink-dist-*.jar /opt/flink/lib/
+COPY --from=build /workspace/libs/* /opt/flink/lib/
 
 # Ensure files are readable by the default Flink user (UID 1000) if needed.
 USER root

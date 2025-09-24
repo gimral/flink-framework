@@ -33,3 +33,5 @@ replay_pid*
 *.iml
 
 dependency-reduced-pom.xml
+
+local-maven-repo/

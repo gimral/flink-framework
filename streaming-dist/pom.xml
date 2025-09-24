@@ -44,6 +44,12 @@
         </dependency>
 
         <dependency>
+            <groupId>com.gimral</groupId>
+            <artifactId>streaming-logger</artifactId>
+            <version>${leap.streaming.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.aspectj</groupId>
             <artifactId>aspectjrt</artifactId>
             <version>${aspectj.version}</version>
@@ -82,6 +88,10 @@
                         <dependency>
                             <groupId>com.gimral</groupId>
                             <artifactId>streaming-core</artifactId>
+                        </dependency>
+                        <dependency>
+                            <groupId>com.gimral</groupId>
+                            <artifactId>streaming-logger</artifactId>
                         </dependency>
                         <dependency>
                             <groupId>org.aspectj</groupId>
