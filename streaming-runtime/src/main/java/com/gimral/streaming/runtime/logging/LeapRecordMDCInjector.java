@@ -1,6 +1,6 @@
 package com.gimral.streaming.runtime.logging;
 
-import com.gimral.streaming.core.configuration.FlinkOptions;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gimral.streaming.core.model.LeapEvent;
 import com.gimral.streaming.core.model.LeapRecord;
 import com.gimral.streaming.core.model.LeapRecordConstants;
@@ -11,15 +11,19 @@ import org.slf4j.MDC;
 /** Utility for safely injecting and removing MDC context for LeapRecord fields. */
 public class LeapRecordMDCInjector implements Closeable {
     public static LeapRecordMDCInjector putAll(LeapRecord<?> record) {
-        putIfNotNull("job-name", FlinkOptions.getJobName());
         if (record == null) return new LeapRecordMDCInjector();
 
         putIfNotNull(
                 LeapRecordConstants.METADATA,
                 record.getMetadata() != null ? Arrays.toString(record.getMetadata()) : null);
 
-        if (!(record.getValue() instanceof LeapEvent<?> event)) return new LeapRecordMDCInjector();
+        if ((record.getValue() instanceof LeapEvent<?> event)) populateForLeapEvent(event);
+        else if (record.getValue() instanceof ObjectNode node) populateForObjectNode(node);
 
+        return new LeapRecordMDCInjector();
+    }
+
+    private static void populateForLeapEvent(LeapEvent<?> event) {
         putIfNotNull(LeapRecordConstants.EVENT_ID, event.getEventId());
         putIfNotNull(LeapRecordConstants.URC, event.getUrc());
         putIfNotNull(LeapRecordConstants.GRC, event.getGrc());
@@ -29,8 +33,30 @@ public class LeapRecordMDCInjector implements Closeable {
                 LeapRecordConstants.TIMESTAMP,
                 event.getTimestamp() != null ? event.getTimestamp().toString() : null);
         putIfNotNull(LeapRecordConstants.TYPE, event.getType());
+    }
 
-        return new LeapRecordMDCInjector();
+    private static void populateForObjectNode(ObjectNode node) {
+        putIfNotNull(
+                LeapRecordConstants.EVENT_ID, getObjectNodeField(node, LeapRecordConstants.EVENT_ID));
+        putIfNotNull(LeapRecordConstants.URC, getObjectNodeField(node, LeapRecordConstants.URC));
+        putIfNotNull(LeapRecordConstants.GRC, getObjectNodeField(node, LeapRecordConstants.GRC));
+        putIfNotNull(
+                LeapRecordConstants.CHANNEL_ID,
+                getObjectNodeField(node, LeapRecordConstants.CHANNEL_ID));
+        putIfNotNull(
+                LeapRecordConstants.FINANCIAL_ID,
+                getObjectNodeField(node, LeapRecordConstants.FINANCIAL_ID));
+        putIfNotNull(
+                LeapRecordConstants.TIMESTAMP,
+                getObjectNodeField(node, LeapRecordConstants.TIMESTAMP));
+        putIfNotNull(LeapRecordConstants.TYPE, getObjectNodeField(node, LeapRecordConstants.TYPE));
+    }
+
+    private static String getObjectNodeField(ObjectNode node, String fieldName) {
+        if (node.has(fieldName) && !node.get(fieldName).isNull()) {
+            return node.get(fieldName).asText();
+        }
+        return null;
     }
 
     private static void putIfNotNull(String key, String value) {
