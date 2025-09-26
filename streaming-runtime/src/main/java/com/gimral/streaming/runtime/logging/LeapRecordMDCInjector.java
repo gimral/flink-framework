@@ -2,6 +2,7 @@ package com.gimral.streaming.runtime.logging;
 
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.gimral.streaming.core.model.LeapEvent;
+import com.gimral.streaming.core.model.LeapMetaData;
 import com.gimral.streaming.core.model.LeapRecord;
 import com.gimral.streaming.core.model.LeapRecordConstants;
 import java.io.Closeable;
@@ -13,14 +14,23 @@ public class LeapRecordMDCInjector implements Closeable {
     public static LeapRecordMDCInjector putAll(LeapRecord<?> record) {
         if (record == null) return new LeapRecordMDCInjector();
 
-        putIfNotNull(
-                LeapRecordConstants.METADATA,
-                record.getMetadata() != null ? Arrays.toString(record.getMetadata()) : null);
+        for(int i=0;i< (record.getMetadata()!=null?record.getMetadata().length:0);i++){
+            LeapMetaData md = record.getMetadata()[i];
+            String prefix = LeapRecordConstants.METADATA + (record.getMetadata().length > 0 ?  "." + i : "");
+            if(md!=null) populateMetaData(md,prefix);
+        }
 
         if ((record.getValue() instanceof LeapEvent<?> event)) populateForLeapEvent(event);
         else if (record.getValue() instanceof ObjectNode node) populateForObjectNode(node);
 
         return new LeapRecordMDCInjector();
+    }
+
+    private static void populateMetaData(LeapMetaData md,String prefix){
+        putIfNotNull(prefix + "." + LeapRecordConstants.METADATA_SOURCE, md.getSource());
+        putIfNotNull(prefix + "." + LeapRecordConstants.METADATA_PARTITION, md.getPartition());
+        putIfNotNull(prefix + "." + LeapRecordConstants.METADATA_OFFSET, md.getOffset());
+        putIfNotNull(prefix + "." + LeapRecordConstants.METADATA_TIMESTAMP, md.getTimestamp());
     }
 
     private static void populateForLeapEvent(LeapEvent<?> event) {
