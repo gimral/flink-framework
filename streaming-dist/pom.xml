@@ -47,6 +47,12 @@
             <groupId>com.gimral</groupId>
             <artifactId>streaming-logger</artifactId>
             <version>${leap.streaming.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.gimral</groupId>
+                    <artifactId>streaming-core</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -89,10 +95,10 @@
                             <groupId>com.gimral</groupId>
                             <artifactId>streaming-core</artifactId>
                         </dependency>
-                        <dependency>
-                            <groupId>com.gimral</groupId>
-                            <artifactId>streaming-logger</artifactId>
-                        </dependency>
+<!--                        <dependency>-->
+<!--                            <groupId>com.gimral</groupId>-->
+<!--                            <artifactId>streaming-logger</artifactId>-->
+<!--                        </dependency>-->
                         <dependency>
                             <groupId>org.aspectj</groupId>
                             <artifactId>aspectjrt</artifactId>
@@ -146,6 +152,7 @@
                             <artifactSet>
                                 <includes>
                                     <include>com.gimral:streaming-runtime</include>
+                                    <include>com.gimral:streaming-logger</include>
                                 </includes>
                             </artifactSet>
                             <filters>
@@ -153,6 +160,14 @@
                                     <artifact>com.gimral:streaming-runtime</artifact>
                                     <includes>
                                         <include>com/gimral/**</include>
+                                    </includes>
+                                </filter>
+                                <filter>
+                                    <artifact>com.gimral:streaming-logger</artifact>
+                                    <includes>
+                                        <include>com/gimral/**</include>
+                                        <include>META-INF/**</include>
+                                        <resource>**</resource>
                                     </includes>
                                 </filter>
                                 <filter>

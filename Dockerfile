@@ -22,6 +22,7 @@ RUN mvn deploy:deploy-file -DgroupId=org.apache.flink -DartifactId=flink-dist -D
 
 RUN --mount=type=cache,target=/root/.m2 mvn -f streaming-dist -DskipTests package
 
+RUN mvn dependency:copy -DexcludeTransitive=true -Dartifact=org.apache.logging.log4j:log4j-layout-template-json:2.24.1 -DoutputDirectory=/workspace/libs
 RUN mvn dependency:copy -DexcludeTransitive=true -Dartifact=org.apache.flink:flink-connector-kafka:4.0.0-2.0 -DoutputDirectory=/workspace/libs
 RUN mvn dependency:copy -DexcludeTransitive=true -Dartifact=org.apache.kafka:kafka-clients:4.0.0 -DoutputDirectory=/workspace/libs
 

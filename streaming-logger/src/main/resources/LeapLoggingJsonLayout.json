@@ -13,7 +13,7 @@
     },
     "message": {
       "$resolver": "mask",
-      "patterns": "classpath:SensitivePatterns.json"
+      "patterns": "classpath:LeapLoggingSensitivePatterns.json"
     },
     "process.thread.name": {
       "$resolver": "thread",
